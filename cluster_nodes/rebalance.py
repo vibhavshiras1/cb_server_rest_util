@@ -1,12 +1,12 @@
 """
 https://docs.couchbase.com/server/current/rest-api/rest-rebalance-overview.html
 """
-from rest_api.connection import CBRestConnection
+from cb_server_rest_util.connection import CBRestConnection
 
 
 class RebalanceRestAPI(CBRestConnection):
     def __init__(self):
-        super(RebalanceRestAPI).__init__()
+        super(RebalanceRestAPI, self).__init__()
 
     def rebalance(self, known_nodes, eject_nodes=None):
         """

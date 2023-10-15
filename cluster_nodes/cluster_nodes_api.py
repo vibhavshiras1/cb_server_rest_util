@@ -1,9 +1,11 @@
-from rest_api.cluster_nodes.cluster_init_provision \
+from cb_server_rest_util.cluster_nodes.cluster_init_provision \
     import ClusterInitializationProvision
-from rest_api.cluster_nodes.rebalance import RebalanceRestAPI
+from cb_server_rest_util.cluster_nodes.rebalance import RebalanceRestAPI
+from cb_server_rest_util.cluster_nodes.status_and_events import \
+    StatusAndEventsAPI
 
 
-class ClusterRestAPI(ClusterInitializationProvision, RebalanceRestAPI):
+class ClusterRestAPI(ClusterInitializationProvision, RebalanceRestAPI, StatusAndEventsAPI):
     def __init__(self, server):
         """
         Main gateway for all Cluster Rest Operations

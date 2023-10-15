@@ -28,6 +28,14 @@ class CBRestConnection(object):
                 return "auth: " + base64.decodestring(val[6:])
         return ""
 
+    @staticmethod
+    def urlencode(params):
+        return urllib.urlencode(params)
+
+    @staticmethod
+    def json_from_str(content):
+        return json.loads(content)
+
     def set_server_values(self, server):
         self.ip = server.ip
         self.port = server.port
