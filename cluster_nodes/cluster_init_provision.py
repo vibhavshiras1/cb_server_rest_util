@@ -52,11 +52,11 @@ class ClusterInitializationProvision(CBRestConnection):
         if allowed_hosts:
             params["allowedHosts"] = allowed_hosts
 
-        status, content, _ = self.http_request(api, CBRestConnection.POST,
-                                                self.urlencode(params))
-        if status:
-            return self.json_from_str(content)
-        return content
+        api = self.base_url + "/clusterInit"
+        status, response = self.request(api, CBRestConnection.POST,
+                                        self.urlencode(params))
+        content = response.json if status else response.text
+        return status, content
 
     def initialize_node(self, username, password,
                         data_path=None, index_path=None,
@@ -78,8 +78,9 @@ class ClusterInitializationProvision(CBRestConnection):
         if java_home:
             params["java_home"] = java_home
         headers = self.create_headers(username, password)
-        status, content, _ = self.http_request(
-            api, CBRestConnection.POST, self.urlencode(params), headers)
+        status, response = self.request(api, CBRestConnection.POST,
+                                        self.urlencode(params), headers)
+        content = response.json if status else response.text
         return status, content
 
     def establish_credentials(self, username, password, port="SAME"):
@@ -87,32 +88,78 @@ class ClusterInitializationProvision(CBRestConnection):
         POST /settings/web
         docs.couchbase.com/server/current/rest-api/rest-establish-credentials.html
         """
-        raise NotImplementedError()
+        api = self.base_url + "/settings/web"
+        params = dict()
+        params["username"] = username
+        params["password"] = password
+        params["port"] = port
+        headers = self.create_headers(username, password)
+        status, response = self.request(api, CBRestConnection.POST,
+                                        params, headers)
+        content = response.json if status else response.text
+        return status, content
 
     def rename_node(self, hostname):
         """
         POST /node/controller/rename
         docs.couchbase.com/server/current/rest-api/rest-name-node.html
         """
-        raise NotImplementedError()
+        api = self.base_url + "/node/controller/rename"
+        params = {"hostname": hostname}
+        headers = self.create_headers(self.username, self.password)
+        status, response = self.request(api, CBRestConnection.POST,
+                                        params, headers)
+        content = response.json if status else response.text
+        return status, content
 
-    def configure_memory(self):
+    def configure_memory(self, memory_quota=None, index_memory_quota=None,
+                         eventing_memory_quota=None, fts_memory_quota=None,
+                         cbas_memory_quota=None):
         """
         POST /pools/default
         docs.couchbase.com/server/current/rest-api/rest-configure-memory.html
         """
-        raise NotImplementedError()
+        api = self.base_url + "/pools/default"
+        headers = self.create_headers(self.username, self.password)
+        params = dict()
+        if memory_quota is not None:
+            params["memoryQuota"] = memory_quota
+        if index_memory_quota is not None:
+            params["indexMemoryQuota"] = index_memory_quota
+        if eventing_memory_quota is not None:
+            params["eventingMemoryQuota"] = eventing_memory_quota
+        if fts_memory_quota is not None:
+            params["ftsMemoryQuota"] = fts_memory_quota
+        if cbas_memory_quota is not None:
+            params["cbasMemoryQuota"] = cbas_memory_quota
+        status, response = self.request(api, CBRestConnection.POST,
+                                        params, headers)
+        content = response.json if status else response.text
+        return status, content
 
-    def setup_services(self):
+    def setup_services(self, services):
         """
         POST /node/controller/setupServices
         docs.couchbase.com/server/current/rest-api/rest-set-up-services.html
+        :param services: List of services to configure as string
         """
-        raise NotImplementedError()
+        api = self.base_url + "/node/controller/setupServices"
+        params = {"services": services}
+        headers = self.create_headers(self.username, self.password)
+        status, response = self.request(api, CBRestConnection.POST,
+                                        params, headers)
+        content = response.json if status else response.text
+        return status, content
 
-    def naming_the_cluster(self):
+    def naming_the_cluster(self, cluster_name):
         """
-        POST /node/controller/setupServices
+        POST /pools/default
         docs.couchbase.com/server/current/rest-api/rest-name-cluster.html
         """
-        raise NotImplementedError()
+        api = self.base_url + "/node/controller/setupServices"
+        params = {"clusterName": cluster_name}
+        headers = self.create_headers(self.username, self.password)
+        status, response = self.request(api, CBRestConnection.POST,
+                                        params, headers)
+        content = response.json if status else response.text
+        return status, content

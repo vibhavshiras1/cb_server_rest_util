@@ -25,6 +25,10 @@ class StatusAndEventsAPI(CBRestConnection):
         GET /pools
         docs.couchbase.com/server/current/rest-api/rest-cluster-get.html
         """
+        api = self.base_url + "/pools"
+        status, response = self.request(api, CBRestConnection.GET)
+        content = response.json() if status else response.text
+        return status, content
 
     def cluster_details(self):
         """
@@ -32,7 +36,6 @@ class StatusAndEventsAPI(CBRestConnection):
         docs.couchbase.com/server/current/rest-api/rest-cluster-details.html
         """
         api = self.base_url + "/pools/default"
-        status, content, header = self.http_request(api, CBRestConnection.GET)
-        if status:
-            return self.json_from_str(content)
-        return content
+        status, response = self.request(api, CBRestConnection.GET)
+        content = response.json() if status else response.text
+        return status, content
