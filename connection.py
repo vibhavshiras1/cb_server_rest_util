@@ -1,16 +1,12 @@
 import base64
 import json
 import logging
-import socket
 import traceback
 
 import requests
 import time
 
-from Cb_constants import CbServer, ClusterRun, constants
-from common_lib import sleep
-from custom_exceptions.exception import ServerUnavailableException
-from membase.api import httplib2
+from cb_server_rest_util.constants.cb_server import CbServer
 
 
 class CBRestConnection(object):
@@ -25,7 +21,8 @@ class CBRestConnection(object):
         if key in headers:
             val = headers[key]
             if val.startswith("Basic "):
-                return "auth: " + base64.decodestring(val[6:])
+                val = val.encode()
+                return str("auth: " + base64.decodebytes(val[6:]).decode())
         return ""
 
     @staticmethod
@@ -44,11 +41,11 @@ class CBRestConnection(object):
         self.type = "default"
 
     def set_endpoint_urls(self, server):
-        index_port = constants.index_port
-        fts_port = constants.fts_port
-        query_port = constants.n1ql_port
-        eventing_port = constants.eventing_port
-        backup_port = constants.backup_port
+        index_port = CbServer.index_port
+        fts_port = CbServer.fts_port
+        query_port = CbServer.n1ql_port
+        eventing_port = CbServer.eventing_port
+        backup_port = CbServer.backup_port
         hostname = None
 
         if hasattr(server, 'index_port') and server.index_port:
@@ -77,8 +74,8 @@ class CBRestConnection(object):
                 eventing_port = CbServer.ssl_eventing_port
                 backup_port = CbServer.ssl_backup_port
 
-        http_url = "http://{0}:{1}/"
-        https_url = "https://{0}:{1}/"
+        http_url = "http://{0}:{1}"
+        https_url = "https://{0}:{1}"
         generic_url = http_url
         if CbServer.use_https:
             generic_url = https_url
@@ -97,25 +94,25 @@ class CBRestConnection(object):
 
     @staticmethod
     def check_if_couchbase_is_active(rest, max_retry=5):
-        api = rest.base_url + 'nodes/self'
+        api = rest.base_url + '/nodes/self'
         if rest.type != "default" or rest.type == "nebula":
-            api = rest.base_url + "pools/default"
+            api = rest.base_url + "/pools/default"
         # for Node is unknown to this cluster error
         node_unknown_msg = "Node is unknown to this cluster"
         unexpected_server_err_msg = "Unexpected server error, request logged"
         headers = rest.create_headers(rest.username, rest.password,
                                       'application/json')
-        for iteration in xrange(max_retry):
+        for iteration in range(max_retry):
             http_res = None
             success = False
             try:
-                status, content, header = rest.http_request(
+                status, content, header = rest.request(
                     api, CBRestConnection.GET, headers=headers, timeout=30)
                 http_res = json.loads(content)
                 if status:
                     success = True
                 else:
-                    rest.log.debug("{0} with status {1}: {2}".format(api, status, http_res))
+                    rest.log.warning("{0} with status {1}: {2}".format(api, status, http_res))
             except ValueError as e:
                 rest.log.critical(e)
             if not success and type(http_res) == unicode \
@@ -158,7 +155,6 @@ class CBRestConnection(object):
 
         self.log = logging.getLogger("rest_api")
 
-
     def create_headers(self, username=None, password=None,
                        content_type='application/x-www-form-urlencoded'):
         username = username or self.username
@@ -176,36 +172,35 @@ class CBRestConnection(object):
         return {'Content-type': 'application/json',
                 'Authorization': 'Basic %s' % authorization}
 
-    def _urllib_request(self, api, method='GET', params='', headers=None,
-                        timeout=300, verify=False, session=None):
-        if session is None:
-            session = requests.Session()
+    def request(self, api, method='GET', params='', headers=None,
+                timeout=300, verify=False, session=None):
+        """
+        :param api:
+        :param method:
+        :param params:
+        :param headers:
+        :param timeout:
+        :param verify:
+        :param session:
+        :return:
+        """
+        session = session or requests.Session()
+        headers = headers or self.create_headers()
         end_time = time.time() + timeout
         while True:
             try:
-                if method == "GET":
-                    response = session.get(api, params=params, headers=headers,
-                                           timeout=timeout, verify=verify)
-                elif method == "POST":
-                    response = session.post(api, data=params, headers=headers,
-                                            timeout=timeout, verify=verify)
-                elif method == "DELETE":
-                    response = session.delete(api, data=params, headers=headers,
-                                              timeout=timeout, verify=verify)
-                elif method == "PUT":
-                    response = session.put(api, data=params, headers=headers,
-                                           timeout=timeout, verify=verify)
-                elif method == "PATCH":
-                    response = session.patch(api, data=params, headers=headers,
-                                             timeout=timeout, verify=verify)
-                else:
-                    raise NotImplemented("Unsupported method {}".format(method))
-
+                response = session.request(
+                    method,
+                    api,
+                    data=params,
+                    headers=headers,
+                    timeout=timeout,
+                    verify=verify)
                 if 200 <= response.status_code < 300:
-                    return True, response.content, response
+                    return True, response
                 else:
                     try:
-                        json_parsed = json.loads(response.content)
+                        json_parsed = response.json()
                     except ValueError:
                         json_parsed = dict()
                         json_parsed["error"] = "status: {0}, content: {1}".format(
@@ -231,11 +226,11 @@ class CBRestConnection(object):
                                   'error: {4} reason: {5} {6} {7}'. \
                             format(method, api, params, headers,
                                    response.status_code, reason,
-                                   response.content.rstrip('\n'),
+                                   (response.content.decode()).rstrip('\n'),
                                    self.get_auth(headers))
                     self.log.debug(message)
                     self.log.debug(''.join(traceback.format_stack()))
-                    return False, response.content, response
+                    return False, response
             except requests.exceptions.HTTPError as errh:
                 self.log.error("HTTP Error {0}".format(errh))
             except requests.exceptions.ConnectionError as errc:
@@ -252,63 +247,6 @@ class CBRestConnection(object):
                     raise ServerUnavailableException(ip=self.ip)
             except requests.exceptions.RequestException as err:
                 self.log.error("Something else: {0}".format(err))
-                if time.time() > end_time:
-                    raise ServerUnavailableException(ip=self.ip)
-            sleep(3, log_type="infra")
-
-
-    def http_request(self, api, method='GET', params='', headers=None,
-                      timeout=300):
-        if not headers:
-            headers = self.create_headers()
-        if CbServer.use_https:
-            status, content, response = \
-                self._urllib_request(api, method=method, params=params, headers=headers,
-                                     timeout=timeout, verify=False)
-            return status, content, response
-        end_time = time.time() + timeout
-        while True:
-            try:
-                response, content = httplib2.Http(timeout=timeout).request(
-                    api, method, params, headers)
-                if response.status in [200, 201, 202, 204]:
-                    return True, content, response
-                else:
-                    try:
-                        json_parsed = json.loads(content)
-                    except ValueError:
-                        json_parsed = dict()
-                        json_parsed["error"] = "status: {0}, content: {1}" \
-                            .format(response['status'], content)
-                    reason = "unknown"
-                    if "error" in json_parsed:
-                        reason = json_parsed["error"]
-                    if ("accesskey" in params.lower()) or ("secretaccesskey" in params.lower()) or (
-                            "password" in params.lower()) or ("secretkey" in params.lower()):
-                        message = '{0} {1} body: {2} headers: {3} ' \
-                                  'error: {4} reason: {5} {6} {7}'. \
-                            format(method, api, "Body is being redacted because it contains sensitive info", headers,
-                                   response['status'], reason,
-                                   content.rstrip('\n'),
-                                   self.get_auth(headers))
-                    else:
-                        message = '{0} {1} body: {2} headers: {3} ' \
-                                  'error: {4} reason: {5} {6} {7}'. \
-                            format(method, api, params, headers,
-                                   response['status'], reason,
-                                   content.rstrip('\n'),
-                                   self.get_auth(headers))
-                    self.log.debug(message)
-                    self.log.debug(''.join(traceback.format_stack()))
-                    return False, content, response
-            except socket.error as e:
-                self.log.error("Socket error while connecting to {0}. "
-                               "Error {1}".format(api, e))
-                if time.time() > end_time:
-                    raise ServerUnavailableException(ip=self.ip)
-            except httplib2.ServerNotFoundError as e:
-                self.log.error("ServerNotFoundError while connecting to {0}. "
-                               "Error {1}".format(api, e))
                 if time.time() > end_time:
                     raise ServerUnavailableException(ip=self.ip)
             sleep(3, log_type="infra")
