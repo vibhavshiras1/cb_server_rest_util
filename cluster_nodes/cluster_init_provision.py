@@ -99,6 +99,15 @@ class ClusterInitializationProvision(CBRestConnection):
         content = response.json if status else response.text
         return status, content
 
+    def reset_node(self):
+        """
+        POST :: /controller/hardResetNode
+        Not documented in CB docs
+        """
+        api = self.base_url + "/controller/hardResetNode"
+        status, content, _ = self.request(api, self.POST)
+        return status, content
+
     def rename_node(self, hostname):
         """
         POST /node/controller/rename

@@ -8,24 +8,20 @@ class SettingsAndConnectionsAPI(CBRestConnection):
     def __init__(self):
         super(SettingsAndConnectionsAPI, self).__init__()
 
-    def manage_internal_settings(self, setting_name=None, setting_value=None):
+    def set_internal_settings(self, setting_name=None, setting_value=None):
         """
-        GET / POST  /internalSettings
-        https://docs.couchbase.com/server/current/rest-api/rest-get-internal-setting.html
-        :param setting_name:
-        :param setting_value:
-        :return:
+        GET / POST :: /internalSettings
+        docs.couchbase.com/server/current/rest-api/rest-get-internal-setting.html
         """
         api = self.base_url + "/internalSettings"
         if setting_name is None:
             # GET method
-            status, response = self.request(api, CBRestConnection.GET)
+            status, content, _ = self.request(api, CBRestConnection.GET)
         else:
             # POST method
             params = {setting_name: setting_value}
-            status, response = self.request(api, CBRestConnection.POST,
-                                            params=params)
-        content = response.json if status else response.text
+            status, content, _ = self.request(api, CBRestConnection.POST,
+                                              params=params)
         return status, content
 
     def manage_internal_settings_max_parallel_indexers(self, value=None):
