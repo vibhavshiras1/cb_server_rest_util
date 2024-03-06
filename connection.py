@@ -1,8 +1,5 @@
 import base64
-import json
 import logging
-import traceback
-
 import requests
 import time
 
@@ -24,14 +21,6 @@ class CBRestConnection(object):
                 val = val.encode()
                 return str("auth: " + base64.decodebytes(val[6:]).decode())
         return ""
-
-    @staticmethod
-    def urlencode(params):
-        return urllib.urlencode(params)
-
-    @staticmethod
-    def json_from_str(content):
-        return json.loads(content)
 
     def set_server_values(self, server):
         self.ip = server.ip
@@ -108,7 +97,6 @@ class CBRestConnection(object):
             try:
                 status, content, header = rest.request(
                     api, CBRestConnection.GET, headers=headers, timeout=30)
-                http_res = json.loads(content)
                 if status:
                     success = True
                 else:
@@ -120,7 +108,7 @@ class CBRestConnection(object):
                          or http_res.find(unexpected_server_err_msg) > -1):
                 rest.log.error("Error {0}, 5 seconds sleep before retry"
                                .format(http_res))
-                sleep(5, log_type="infra")
+                time.sleep(5)
                 if iteration == 2:
                     rest.log.error("Node {0}:{1} is in a broken state!"
                                    .format(rest.ip, rest.port))
@@ -188,6 +176,7 @@ class CBRestConnection(object):
         headers = headers or self.create_headers()
         end_time = time.time() + timeout
         while True:
+            status = False
             try:
                 response = session.request(
                     method,
@@ -196,43 +185,17 @@ class CBRestConnection(object):
                     headers=headers,
                     timeout=timeout,
                     verify=verify)
+                content = response.content
                 if 200 <= response.status_code < 300:
-                    return True, response
-                else:
-                    try:
-                        json_parsed = response.json()
-                    except ValueError:
-                        json_parsed = dict()
-                        json_parsed["error"] = "status: {0}, content: {1}".format(
-                            response.status_code, response.content)
-                    reason = "unknown"
-                    if "error" in json_parsed:
-                        reason = json_parsed["error"]
-                    elif "errors" in json_parsed:
-                        reason = json_parsed["errors"]
-                    if ("accesskey" in params.lower()) or (
-                            "secretaccesskey" in params.lower()) or (
-                            "password" in params.lower()) or (
-                            "secretkey" in params.lower()):
-                        message = '{0} {1} body: {2} headers: {3} ' \
-                                  'error: {4} reason: {5} {6} {7}'. \
-                            format(method, api,
-                                   "Body is being redacted because it contains sensitive info",
-                                   headers, response.status_code, reason,
-                                   response.content.rstrip('\n'),
-                                   self.get_auth(headers))
-                    else:
-                        message = '{0} {1} body: {2} headers: {3} ' \
-                                  'error: {4} reason: {5} {6} {7}'. \
-                            format(method, api, params, headers,
-                                   response.status_code, reason,
-                                   (response.content.decode()).rstrip('\n'),
-                                   self.get_auth(headers))
-                    self.log.debug(message)
-                    self.log.debug(''.join(traceback.format_stack()))
-                    return False, response
+                    status = True
+                try:
+                    content = response.json()
+                except ValueError:
+                    content
+                    pass
+                return status, content, response
             except requests.exceptions.HTTPError as errh:
-                self.log.error("HTTP Error {0}".format(errh))
+                self.log.error("HTTPError {0}".format(errh))
             except requests.exceptions.ConnectionError as errc:
                 if "Illegal state exception" in str(errc):
                     # Known ssl bug, retry
@@ -240,13 +203,13 @@ class CBRestConnection(object):
                 else:
                     self.log.debug("Error Connecting {0}".format(errc))
                 if time.time() > end_time:
-                    raise ServerUnavailableException(ip=self.ip)
+                    raise Exception(f"ServerUnavailableException - {self.ip}")
             except requests.exceptions.Timeout as errt:
                 self.log.error("Timeout Error: {0}".format(errt))
                 if time.time() > end_time:
-                    raise ServerUnavailableException(ip=self.ip)
+                    raise Exception(f"ServerUnavailableException - {self.ip}")
             except requests.exceptions.RequestException as err:
                 self.log.error("Something else: {0}".format(err))
                 if time.time() > end_time:
-                    raise ServerUnavailableException(ip=self.ip)
-            sleep(3, log_type="infra")
+                    raise Exception(f"ServerUnavailableException - {self.ip}")
+            time.sleep(3)
