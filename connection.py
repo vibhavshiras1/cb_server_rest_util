@@ -28,6 +28,7 @@ class CBRestConnection(object):
         self.username = server.rest_username
         self.password = server.rest_password
         self.type = "default"
+        self.log = logging.getLogger("rest_api")
 
     def set_endpoint_urls(self, server):
         index_port = CbServer.index_port
