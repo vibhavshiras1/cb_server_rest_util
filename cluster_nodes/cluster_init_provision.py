@@ -78,9 +78,8 @@ class ClusterInitializationProvision(CBRestConnection):
         if java_home:
             params["java_home"] = java_home
         headers = self.create_headers(username, password)
-        status, response = self.request(api, CBRestConnection.POST,
-                                        self.urlencode(params), headers)
-        content = response.json if status else response.text
+        status, content, _ = self.request(api, CBRestConnection.POST,
+                                          params, headers)
         return status, content
 
     def establish_credentials(self, username, password, port="SAME"):
@@ -89,14 +88,12 @@ class ClusterInitializationProvision(CBRestConnection):
         docs.couchbase.com/server/current/rest-api/rest-establish-credentials.html
         """
         api = self.base_url + "/settings/web"
-        params = dict()
-        params["username"] = username
-        params["password"] = password
-        params["port"] = port
+        params = {"username": username,
+                  "password": password,
+                  "port": port}
         headers = self.create_headers(username, password)
-        status, response = self.request(api, CBRestConnection.POST,
-                                        params, headers)
-        content = response.json if status else response.text
+        status, content, _ = self.request(api, CBRestConnection.POST,
+                                          params, headers)
         return status, content
 
     def reset_node(self):
@@ -116,34 +113,19 @@ class ClusterInitializationProvision(CBRestConnection):
         api = self.base_url + "/node/controller/rename"
         params = {"hostname": hostname}
         headers = self.create_headers(self.username, self.password)
-        status, response = self.request(api, CBRestConnection.POST,
-                                        params, headers)
-        content = response.json if status else response.text
+        status, content, _ = self.request(api, CBRestConnection.POST,
+                                          params, headers)
         return status, content
 
-    def configure_memory(self, memory_quota=None, index_memory_quota=None,
-                         eventing_memory_quota=None, fts_memory_quota=None,
-                         cbas_memory_quota=None):
+    def configure_memory(self, mem_quota_dict):
         """
         POST /pools/default
         docs.couchbase.com/server/current/rest-api/rest-configure-memory.html
         """
         api = self.base_url + "/pools/default"
         headers = self.create_headers(self.username, self.password)
-        params = dict()
-        if memory_quota is not None:
-            params["memoryQuota"] = memory_quota
-        if index_memory_quota is not None:
-            params["indexMemoryQuota"] = index_memory_quota
-        if eventing_memory_quota is not None:
-            params["eventingMemoryQuota"] = eventing_memory_quota
-        if fts_memory_quota is not None:
-            params["ftsMemoryQuota"] = fts_memory_quota
-        if cbas_memory_quota is not None:
-            params["cbasMemoryQuota"] = cbas_memory_quota
-        status, response = self.request(api, CBRestConnection.POST,
-                                        params, headers)
-        content = response.json if status else response.text
+        status, content, _ = self.request(api, CBRestConnection.POST,
+                                          mem_quota_dict, headers)
         return status, content
 
     def setup_services(self, services):
@@ -155,9 +137,8 @@ class ClusterInitializationProvision(CBRestConnection):
         api = self.base_url + "/node/controller/setupServices"
         params = {"services": services}
         headers = self.create_headers(self.username, self.password)
-        status, response = self.request(api, CBRestConnection.POST,
-                                        params, headers)
-        content = response.json if status else response.text
+        status, content, _ = self.request(api, CBRestConnection.POST,
+                                          params, headers)
         return status, content
 
     def naming_the_cluster(self, cluster_name):
@@ -168,7 +149,6 @@ class ClusterInitializationProvision(CBRestConnection):
         api = self.base_url + "/node/controller/setupServices"
         params = {"clusterName": cluster_name}
         headers = self.create_headers(self.username, self.password)
-        status, response = self.request(api, CBRestConnection.POST,
-                                        params, headers)
-        content = response.json if status else response.text
+        status, content, _ = self.request(api, CBRestConnection.POST,
+                                          params, headers)
         return status, content

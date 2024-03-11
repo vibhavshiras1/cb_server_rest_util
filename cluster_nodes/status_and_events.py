@@ -10,7 +10,7 @@ class StatusAndEventsAPI(CBRestConnection):
 
     def cluster_tasks(self):
         """
-        GET /pools/default/tasks
+        GET :: /pools/default/tasks
         docs.couchbase.com/server/current/rest-api/rest-get-cluster-tasks.html
         """
         api = self.base_url + "/pools/default/tasks"
@@ -19,13 +19,13 @@ class StatusAndEventsAPI(CBRestConnection):
 
     def rebalance_report(self, report_id):
         """
-        GET /logs/rebalanceReport?reportID=<report-id>
+        GET :: /logs/rebalanceReport?reportID=<report-id>
         docs.couchbase.com/server/current/rest-api/rest-get-cluster-tasks.html
         """
 
     def cluster_info(self):
         """
-        GET /pools
+        GET :: /pools
         docs.couchbase.com/server/current/rest-api/rest-cluster-get.html
         """
         api = self.base_url + "/pools"
@@ -34,7 +34,7 @@ class StatusAndEventsAPI(CBRestConnection):
 
     def cluster_details(self):
         """
-        GET /pools/default
+        GET :: /pools/default
         docs.couchbase.com/server/current/rest-api/rest-cluster-details.html
         """
         api = self.base_url + "/pools/default"
@@ -43,7 +43,7 @@ class StatusAndEventsAPI(CBRestConnection):
 
     def node_details(self):
         """
-        GET /nodes/self
+        GET :: /nodes/self
         docs.couchbase.com/server/current/rest-api/rest-getting-storage-information.html
         """
         api = self.base_url + "/nodes/self"
@@ -67,4 +67,13 @@ class StatusAndEventsAPI(CBRestConnection):
         api = self.base_url + '/logs'
         status, json_parsed, _ = self.request(api)
         # json_parsed = json.loads(json_parsed.decode("utf-8", "ignore"))
+        return status, json_parsed
+
+    def log_client_error(self, msg):
+        """
+        POST :: /logClientError
+        Not documented in CB docs
+        """
+        api = self.base_url + '/logClientError'
+        status, json_parsed, _ = self.request(api, params=msg)
         return status, json_parsed
