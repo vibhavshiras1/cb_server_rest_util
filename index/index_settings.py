@@ -15,10 +15,13 @@ class IndexSettings(CBRestConnection):
         docs.couchbase.com/server/current/rest-api/get-settings-indexes.html
         """
 
-    def set_gsi_settings(self):
+    def set_gsi_settings(self, gsi_settings_dict):
         """
         POST :: /settings/indexes
         """
+        api = self.base_url + '/settings/indexes'
+        status, content, _ = self.request(api, 'POST', gsi_settings_dict)
+        return status, content
 
     def get_node_statistics(self):
         """
