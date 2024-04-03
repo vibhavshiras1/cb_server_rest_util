@@ -8,7 +8,7 @@ class RebalanceRestAPI(CBRestConnection):
     def __init__(self):
         super(RebalanceRestAPI, self).__init__()
 
-    def rebalance(self, known_nodes, eject_nodes=None):
+    def rebalance(self, known_nodes, eject_nodes=None, defrag_options=None):
         """
         POST :: /controller/rebalance
         docs.couchbase.com/server/current/rest-api/rest-cluster-rebalance.html
@@ -18,6 +18,12 @@ class RebalanceRestAPI(CBRestConnection):
         params = {"knownNodes": known_nodes}
         if eject_nodes:
             params["ejectedNodes"] = eject_nodes
+
+        if defrag_options:
+            # These options are valid only for serverless mode
+            params['defragmentZones'] = defrag_options["defragmentZones"]
+            params['knownNodes'] = defrag_options["knownNodes"]
+
         status, content, _ = self.request(api, self.POST, params)
         return status, content
 
