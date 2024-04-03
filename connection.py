@@ -4,6 +4,7 @@ import requests
 import time
 
 from cb_server_rest_util.constants.cb_server import CbServer
+from cb_server_rest_util.constants.cluster_run import ClusterRun
 
 
 class CBRestConnection(object):
