@@ -1,0 +1,4 @@
+[submodule "py_constants"]
+	path = py_constants
+	url = https://github.com/couchbaselabs/py_constants.git
+	branch = master

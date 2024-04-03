@@ -3,8 +3,8 @@ import logging
 import requests
 import time
 
-from cb_server_rest_util.constants.cb_server import CbServer
-from cb_server_rest_util.constants.cluster_run import ClusterRun
+from cb_constants.CBServer import CbServer
+from cb_constants.ClusterRun import ClusterRun
 
 
 class CBRestConnection(object):
