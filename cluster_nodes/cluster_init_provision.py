@@ -78,8 +78,7 @@ class ClusterInitializationProvision(CBRestConnection):
         if java_home:
             params["java_home"] = java_home
         headers = self.create_headers(username, password)
-        status, content, _ = self.request(api, CBRestConnection.POST,
-                                          params, headers)
+        status, content, _ = self.request(api, self.POST, params, headers)
         return status, content
 
     def establish_credentials(self, username, password, port="SAME"):
@@ -135,7 +134,7 @@ class ClusterInitializationProvision(CBRestConnection):
         :param services: List of services to configure as string
         """
         api = self.base_url + "/node/controller/setupServices"
-        params = {"services": services}
+        params = {"services": ",".join(services)}
         headers = self.create_headers(self.username, self.password)
         status, content, _ = self.request(api, CBRestConnection.POST,
                                           params, headers)
