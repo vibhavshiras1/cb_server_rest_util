@@ -17,6 +17,7 @@ class RebalanceRestAPI(CBRestConnection):
         known_nodes = ','.join(known_nodes)
         params = {"knownNodes": known_nodes}
         if eject_nodes:
+            eject_nodes = ','.join(eject_nodes)
             params["ejectedNodes"] = eject_nodes
 
         if defrag_options:
