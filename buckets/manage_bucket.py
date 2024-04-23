@@ -9,6 +9,7 @@ class BucketManageAPI(CBRestConnection):
 
     def get_available_sample_buckets(self):
         """
+        docs.couchbase.com/server/current/rest-api/rest-sample-buckets.html
         GET :: /sampleBuckets
         """
         api = f"{self.base_url}/sampleBuckets"
@@ -17,6 +18,7 @@ class BucketManageAPI(CBRestConnection):
 
     def load_sample_bucket(self, bucket_name_list):
         """
+        docs.couchbase.com/server/current/rest-api/rest-sample-buckets.html
         POST :: /sampleBuckets/install
         """
         api = f"{self.base_url}/sampleBuckets/install"
@@ -27,7 +29,7 @@ class BucketManageAPI(CBRestConnection):
     def create_bucket(self, bucket_params):
         """
         POST :: /pools/default/buckets
-        https://docs.couchbase.com/server/current/rest-api/rest-bucket-create.html
+        docs.couchbase.com/server/current/rest-api/rest-bucket-create.html
         """
         api = f"{self.base_url}/pools/default/buckets"
         status, _, response = self.request(api, self.POST,
@@ -37,26 +39,48 @@ class BucketManageAPI(CBRestConnection):
     def edit_bucket(self, bucket_name, bucket_params):
         """
         POST :: /pools/default/buckets/<bucket_name>
-        https://docs.couchbase.com/server/current/rest-api/rest-bucket-create.html
+        docs.couchbase.com/server/current/rest-api/rest-bucket-create.html
         """
 
     def delete_bucket(self, bucket_name):
         """
         DELETE :: /pools/default/buckets/<bucket_name>
-        https://docs.couchbase.com/server/current/rest-api/rest-bucket-delete.html
+        docs.couchbase.com/server/current/rest-api/rest-bucket-delete.html
         """
         bucket_name = quote(bucket_name)
         api = self.base_url + f"/pools/default/buckets/{bucket_name}"
         status, content, _ = self.request(api, self.DELETE)
         return status, content
 
-    def flush_bucket(self, bucket_name):
-
+    def compact_bucket(self, bucket_name):
         """
-        POST :: /pools/default/buckets/<bucket_name>/controller/doFlush
+        No documentation present
+        POST :: /pools/default/buckets/<bucket_name>/controller/compactBucket
+        """
+        bucket_name = quote(bucket_name)
+        api = self.base_url + f"/pools/default/buckets/{bucket_name}" \
+            + "controller/compactBucket"
+        status, content, _ = self.request(api, self.POST)
+        return status, content
+
+    def cancel_compaction(self, bucket_name):
+        """
+        No documentation present
+        POST :: /pools/default/buckets/<bucket_name>/controller/cancelBucketCompaction
+        """
+        bucket_name = quote(bucket_name)
+        api = self.base_url + f"/pools/default/buckets/{bucket_name}" \
+            + "controller/cancelBucketCompaction"
+        status, content, _ = self.request(api, self.POST)
+        return status, content
+
+    def flush_bucket(self, bucket_name):
+        """
+        docs.couchbase.com/server/current/rest-api/rest-bucket-flush.html
+        POST :: /pools/default/buckets/<bucket_name>/controller/
         """
         bucket_name = quote(bucket_name)
         api = self.base_url \
-              + f"/pools/default/buckets/{bucket_name}/controller/doFlush"
+            + f"/pools/default/buckets/{bucket_name}/controller/doFlush"
         status, content, _ = self.request(api, self.POST)
         return status, content
