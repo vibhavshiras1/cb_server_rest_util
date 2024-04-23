@@ -59,7 +59,7 @@ class BucketManageAPI(CBRestConnection):
         """
         bucket_name = quote(bucket_name)
         api = self.base_url + f"/pools/default/buckets/{bucket_name}" \
-            + "controller/compactBucket"
+            + "/controller/compactBucket"
         status, content, _ = self.request(api, self.POST)
         return status, content
 
@@ -70,7 +70,7 @@ class BucketManageAPI(CBRestConnection):
         """
         bucket_name = quote(bucket_name)
         api = self.base_url + f"/pools/default/buckets/{bucket_name}" \
-            + "controller/cancelBucketCompaction"
+            + "/controller/cancelBucketCompaction"
         status, content, _ = self.request(api, self.POST)
         return status, content
 
