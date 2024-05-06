@@ -44,7 +44,8 @@ class SettingsAndConnectionsAPI(CBRestConnection):
         return status, content
 
     def manage_cluster_connections(self, max_connections=None,
-                                   system_connections=None):
+                                   system_connections=None, num_writer_threads=None, num_reader_threads=None,
+                                   num_storage_threads=None):
         """
         POST / GET /pools/default/settings/memcached/global
         https://docs.couchbase.com/server/current/rest-api/rest-manage-cluster-connections.html
@@ -52,14 +53,21 @@ class SettingsAndConnectionsAPI(CBRestConnection):
         :param system_connections:
         :return:
         """
+        api = self.base_url + "/pools/default/settings/memcached/global"
         params = dict()
         if max_connections is not None:
             params["max_connections"] = max_connections
         if system_connections is not None:
             params["system_connections"] = system_connections
+        if num_reader_threads is not None:
+            params["num_reader_threads"] = num_reader_threads
+        if num_writer_threads is not None:
+            params["num_writer_threads"] = num_writer_threads
+        if num_storage_threads is not None:
+            params["num_storage_threads"] = num_storage_threads
         if params:
             # POST method
-            status, response = self.request(api, CBRestConnection.POST,
+            status, _, response = self.request(api, CBRestConnection.POST,
                                             params=params)
         else:
             # GET method
