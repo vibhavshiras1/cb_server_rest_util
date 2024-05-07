@@ -71,7 +71,7 @@ class SettingsAndConnectionsAPI(CBRestConnection):
                                             params=params)
         else:
             # GET method
-            status, response = self.request(api, CBRestConnection.GET)
+            status, _, response = self.request(api, CBRestConnection.GET)
         content = response.json if status else response.text
         return status, content
 
