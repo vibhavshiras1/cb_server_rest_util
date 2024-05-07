@@ -42,9 +42,9 @@ class BucketManageAPI(CBRestConnection):
         docs.couchbase.com/server/current/rest-api/rest-bucket-create.html
         """
         api = self.base_url + f"/pools/default/buckets/{bucket_name}"
-        status, _, response = self.request(api, self.POST,
+        status, content, _ = self.request(api, self.POST,
                                            params=bucket_params)
-        return status, response
+        return status, content
 
     def delete_bucket(self, bucket_name):
         """
