@@ -1,4 +1,6 @@
 from cb_server_rest_util.cluster_nodes.auto_failover import AutoFailoverAPI
+from cb_server_rest_util.cluster_nodes.auto_reprovision import \
+    AutoReprovisionAPI
 from cb_server_rest_util.cluster_nodes.cluster_init_provision \
     import ClusterInitializationProvision
 from cb_server_rest_util.cluster_nodes.node_add_remove import \
@@ -11,6 +13,7 @@ from cb_server_rest_util.cluster_nodes.status_and_events import \
 
 
 class ClusterRestAPI(AutoFailoverAPI,
+                     AutoReprovisionAPI,
                      ClusterInitializationProvision,
                      NodeAdditionRemoval,
                      RebalanceRestAPI,
