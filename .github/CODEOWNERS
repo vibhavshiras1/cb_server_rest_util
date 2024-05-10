@@ -1,0 +1,5 @@
+# Managing CODEOWNERS File 
+.github/CODEOWNERS @couchbaselabs/taf-mainteners
+
+# Managing all other files
+* @couchbaselabs/taf-mainteners
