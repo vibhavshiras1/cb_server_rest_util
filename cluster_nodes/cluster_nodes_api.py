@@ -9,6 +9,7 @@ from cb_server_rest_util.cluster_nodes.node_add_remove import \
 from cb_server_rest_util.cluster_nodes.rebalance import RebalanceRestAPI
 from cb_server_rest_util.cluster_nodes.settings_and_connections import \
     SettingsAndConnectionsAPI
+from cb_server_rest_util.cluster_nodes.statistics import StatisticsAPI
 from cb_server_rest_util.cluster_nodes.status_and_events import \
     StatusAndEventsAPI
 from cb_server_rest_util.cluster_nodes.diag_eval import DiagEvalAPI
@@ -17,12 +18,13 @@ from cb_server_rest_util.cluster_nodes.diag_eval import DiagEvalAPI
 class ClusterRestAPI(AutoFailoverAPI,
                      AutoReprovisionAPI,
                      ClusterInitializationProvision,
+                     DiagEvalAPI,
                      ManualFailoverAPI,
                      NodeAdditionRemoval,
                      RebalanceRestAPI,
                      SettingsAndConnectionsAPI,
-                     StatusAndEventsAPI,
-                     DiagEvalAPI):
+                     StatisticsAPI,
+                     StatusAndEventsAPI):
     def __init__(self, server):
         """
         Main gateway for all Cluster Rest Operations
