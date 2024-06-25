@@ -88,3 +88,58 @@ class BucketManageAPI(CBRestConnection):
             + f"/pools/default/buckets/{bucket_name}/controller/doFlush"
         status, content, _ = self.request(api, self.POST)
         return status, content
+
+    def set_auto_compaction(self, bucket_name,
+                            parallel_db_and_vc="false",
+                            db_fragment_threshold=None,
+                            view_fragment_threshold=None,
+                            db_fragment_threshold_percentage=None,
+                            view_fragment_threshold_percentage=None,
+                            allowed_time_period_from_hour=None,
+                            allowed_time_period_from_min=None,
+                            allowed_time_period_to_hour=None,
+                            allowed_time_period_to_min=None,
+                            allowed_time_period_abort=None):
+        """
+        POST /pools/default/buckets/<bucket_name>
+        docs.couchbase.com/server/current/rest-api/rest-bucket-create.html#auto-compaction-parameters
+        """
+        params = dict()
+        if bucket_name:
+            # overriding per bucket compaction setting
+            api = f"{self.base_url}/pools/default/buckets/{quote(bucket_name)}"
+            params["autoCompactionDefined"] = "true"
+        else:
+            # setting is cluster wide
+            api = f"{self.base_url}/controller/setAutoCompaction"
+
+        params["parallelDBAndViewCompaction"] = parallel_db_and_vc
+        # Need to verify None because the value could be = 0
+        if db_fragment_threshold is not None:
+            params["databaseFragmentationThreshold[size]"] = \
+                db_fragment_threshold
+        if view_fragment_threshold is not None:
+            params[
+                "viewFragmentationThreshold[size]"] = view_fragment_threshold
+        if db_fragment_threshold_percentage is not None:
+            params["databaseFragmentationThreshold[percentage]"] = \
+                db_fragment_threshold_percentage
+        if view_fragment_threshold_percentage is not None:
+            params["viewFragmentationThreshold[percentage]"] = \
+                view_fragment_threshold_percentage
+        if allowed_time_period_from_hour is not None:
+            params[
+                "allowedTimePeriod[fromHour]"] = allowed_time_period_from_hour
+        if allowed_time_period_from_min is not None:
+            params[
+                "allowedTimePeriod[fromMinute]"] = allowed_time_period_from_min
+        if allowed_time_period_to_hour is not None:
+            params["allowedTimePeriod[toHour]"] = allowed_time_period_to_hour
+        if allowed_time_period_to_min is not None:
+            params["allowedTimePeriod[toMinute]"] = allowed_time_period_to_min
+        if allowed_time_period_abort is not None:
+            params[
+                "allowedTimePeriod[abortOutside]"] = allowed_time_period_abort
+
+        status, content, _ = self.request(api, self.POST, params)
+        return status, content
