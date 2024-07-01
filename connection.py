@@ -105,7 +105,7 @@ class CBRestConnection(object):
                     rest.log.warning("{0} with status {1}: {2}".format(api, status, http_res))
             except ValueError as e:
                 rest.log.critical(e)
-            if not success and type(http_res) == unicode \
+            if not success and type(http_res) == str \
                     and (http_res.find(node_unknown_msg) > -1
                          or http_res.find(unexpected_server_err_msg) > -1):
                 rest.log.error("Error {0}, 5 seconds sleep before retry"
