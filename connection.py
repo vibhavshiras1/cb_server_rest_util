@@ -94,7 +94,7 @@ class CBRestConnection(object):
         headers = rest.create_headers(rest.username, rest.password,
                                       'application/json')
         for iteration in range(max_retry):
-            http_res = None
+            content = None
             success = False
             try:
                 status, content, header = rest.request(
@@ -102,19 +102,19 @@ class CBRestConnection(object):
                 if status:
                     success = True
                 else:
-                    rest.log.warning("{0} with status {1}: {2}".format(api, status, http_res))
+                    rest.log.warning(f"{api} with status {status}: {content}")
             except ValueError as e:
                 rest.log.critical(e)
-            if not success and type(http_res) == str \
-                    and (http_res.find(node_unknown_msg) > -1
-                         or http_res.find(unexpected_server_err_msg) > -1):
+            if not success and type(content) in [bytes, str]\
+                    and (content.find(node_unknown_msg) > -1
+                         or content.find(unexpected_server_err_msg) > -1):
                 rest.log.error("Error {0}, 5 seconds sleep before retry"
-                               .format(http_res))
+                               .format(content))
                 time.sleep(5)
                 if iteration == 2:
                     rest.log.error("Node {0}:{1} is in a broken state!"
                                    .format(rest.ip, rest.port))
-                    raise ServerUnavailableException(rest.ip)
+                    raise Exception(f"Server {rest.ip} unreachable")
                 continue
             else:
                 break
