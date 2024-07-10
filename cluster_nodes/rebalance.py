@@ -74,16 +74,19 @@ class RebalanceRestAPI(CBRestConnection):
         """
         raise NotImplementedError()
 
-    def limit_concurrent_vbucket_moves(self, rebalance_moves_per_node=None):
+    def rebalance_settings(self, rebalance_moves_per_node=None):
         """
         GET / POST :: /settings/rebalance
         docs.couchbase.com/server/current/rest-api/rest-limit-rebalance-moves.html
         """
         method = self.GET
+        params = ""
+        api = self.base_url + '/settings/rebalance'
         if rebalance_moves_per_node is not None:
             method = self.POST
             params = {"rebalanceMovesPerNode": rebalance_moves_per_node}
-        raise NotImplementedError()
+        status, content, _ = self.request(api, method, params=params)
+        return status, content
 
     def set_index_aware_rebalance(self, index_aware_rebalace_disabled):
         """
