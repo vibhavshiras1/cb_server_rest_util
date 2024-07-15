@@ -8,7 +8,8 @@ class RebalanceRestAPI(CBRestConnection):
     def __init__(self):
         super(RebalanceRestAPI, self).__init__()
 
-    def rebalance(self, known_nodes, eject_nodes=None, defrag_options=None):
+    def rebalance(self, known_nodes, eject_nodes=None, topology=None,
+                  defrag_options=None):
         """
         POST :: /controller/rebalance
         docs.couchbase.com/server/current/rest-api/rest-cluster-rebalance.html
@@ -19,6 +20,13 @@ class RebalanceRestAPI(CBRestConnection):
         if eject_nodes:
             eject_nodes = ','.join(eject_nodes)
             params["ejectedNodes"] = eject_nodes
+
+        if topology:
+            # Valid from Morpheus release to update services dynamically
+            for service, otp_nodes in topology.items():
+                topology_key = "topology[%s]" % service
+                params[topology_key] = otp_nodes
+            print("Params:: %s" % params)
 
         if defrag_options:
             # These options are valid only for serverless mode
