@@ -100,6 +100,6 @@ class ScopeAndCollectionsAPI(CBRestConnection):
         bucket_name = quote(bucket_name)
         api = self.base_url \
               + "/pools/default/buckets/%s/scopes/@ensureManifest/%s" \
-              % (bucket_name, uid))
+              % (bucket_name, uid)
         status, content, _ = self.request(api, self.POST)
         return status, content
