@@ -78,3 +78,28 @@ class ScopeAndCollectionsAPI(CBRestConnection):
         api = self.base_url + f"/pools/default/buckets/{bucket_name}/scopes"
         status, content, _ = self.request(api, self.GET)
         return status, content
+
+    def import_collection_using_manifest(self, bucket_name, manifest_data):
+        """
+        PUT /pools/default/buckets/<bucket_name>/scopes
+        No documentation available
+        """
+        bucket_name = quote(bucket_name)
+        header = self.create_headers(content_type="application/json")
+        api = self.base_url + "/pools/default/buckets/%s/scopes" % bucket_name
+        status, content, _ = self.request(api, self.PUT, manifest_data,
+                                          headers=header)
+        return status, content
+
+    def wait_for_collections_warmup(self, bucket_name, uid, session=None):
+        """
+        POST /pools/default/buckets/<bucket_name>/scopes/@ensureManifest/<uid>
+        No documentation available
+        Will wait till the bucket manifest reaches the 'uid' (>=)
+        """
+        bucket_name = quote(bucket_name)
+        api = self.base_url \
+              + "/pools/default/buckets/%s/scopes/@ensureManifest/%s" \
+              % (bucket_name, uid))
+        status, content, _ = self.request(api, self.POST)
+        return status, content
