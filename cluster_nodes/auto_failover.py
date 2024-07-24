@@ -20,7 +20,8 @@ class AutoFailoverAPI(CBRestConnection):
     def update_auto_failover_settings(
             self, enabled="true", timeout=120, max_count=None,
             fo_on_disk_issue=None, fo_on_disk_timeout=None,
-            can_abort_rebalance=None, failover_preserve_durability=None):
+            can_abort_rebalance=None, failover_preserve_durability=None,
+            allow_ephemeral_failover_with_no_replicas=None):
         """
         POST /settings/autoFailover
         docs.couchbase.com/server/current/rest-api/rest-cluster-autofailover-enable.html
@@ -40,6 +41,9 @@ class AutoFailoverAPI(CBRestConnection):
         if failover_preserve_durability is not None:
             params["failoverPreserveDurabilityMajority"] = \
                 failover_preserve_durability
+        if allow_ephemeral_failover_with_no_replicas is not None:
+            params["allowFailoverEphemeralNoReplicas"] = \
+                allow_ephemeral_failover_with_no_replicas
         status, content, _ = self.request(api, self.POST, params=params)
         return status, content
 
