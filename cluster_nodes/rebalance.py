@@ -26,7 +26,6 @@ class RebalanceRestAPI(CBRestConnection):
             for service, otp_nodes in topology.items():
                 topology_key = "topology[%s]" % service
                 params[topology_key] = otp_nodes
-            print("Params:: %s" % params)
 
         if defrag_options:
             # These options are valid only for serverless mode
