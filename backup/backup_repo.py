@@ -12,9 +12,11 @@ class BackupRepoAPIs(CBRestConnection):
         """
         api = self.backup_url \
             + "/api/v1/cluster/self/repository/active/%s" % repo_name
-        status, content, _ = self.request(
-            api, self.POST, params=repo_definition,
-            headers=self.create_headers(content_type="application/json"))
+        params = ""
+        for key, value in repo_definition.items():
+            params += '"%s":"%s",' % (key, value)
+        params = '{%s}' % params[:-1]
+        status, content, _ = self.request(api, self.POST, params=params)
         return status, content
 
     def get_repository_information(self, repo_type, repo_id=None, info=False):
