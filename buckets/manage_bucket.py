@@ -21,9 +21,9 @@ class BucketManageAPI(CBRestConnection):
         docs.couchbase.com/server/current/rest-api/rest-sample-buckets.html
         POST :: /sampleBuckets/install
         """
+        param = self.flatten_param_to_str(bucket_name_list)
         api = f"{self.base_url}/sampleBuckets/install"
-        status, content, _ = self.request(api, self.POST,
-                                          params=str(bucket_name_list))
+        status, content, _ = self.request(api, self.POST, params=param)
         return status, content
 
     def create_bucket(self, bucket_params):

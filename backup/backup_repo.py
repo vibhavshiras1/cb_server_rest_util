@@ -12,10 +12,7 @@ class BackupRepoAPIs(CBRestConnection):
         """
         api = self.backup_url \
             + "/api/v1/cluster/self/repository/active/%s" % repo_name
-        params = ""
-        for key, value in repo_definition.items():
-            params += '"%s":"%s",' % (key, value)
-        params = '{%s}' % params[:-1]
+        params = self.flatten_param_to_str(repo_definition)
         status, content, _ = self.request(api, self.POST, params=params)
         return status, content
 

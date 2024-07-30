@@ -35,3 +35,15 @@ class BucketStats(CBRestConnection):
             api += f"?zoom={zoom}"
         status, content, _ = self.request(api)
         return status, content
+
+    def get_stats_range(self, params):
+        """
+        GET /pools/default/stats/range
+        :param params: String format for a valid dict to represent the required
+                       stats
+        No documentation present
+        """
+        params = self.flatten_param_to_str(params)
+        api = self.base_url + "/pools/default/stats/range"
+        status, content, _ = self.request(api, params=params)
+        return status, content
