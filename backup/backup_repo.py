@@ -39,8 +39,8 @@ class BackupRepoAPIs(CBRestConnection):
         docs.couchbase.com/server/current/rest-api/backup-archive-a-repository.html
         """
         api = self.backup_url \
-            + "/api/v1/repository/active/%s/archive" % repo_id
-        params = {"id": repo_id}
+            + "/api/v1/cluster/self/repository/active/%s/archive" % repo_id
+        params = self.flatten_param_to_str({"id": repo_id})
         status, content, _ = self.request(api, self.POST, params=params)
         return status, content
 
@@ -65,3 +65,4 @@ class BackupRepoAPIs(CBRestConnection):
         if remove_repository:
             api += "?remove_repository=true"
         status, content, _ = self.request(api, self.DELETE)
+        return status, content
