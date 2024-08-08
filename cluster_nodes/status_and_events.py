@@ -32,6 +32,15 @@ class StatusAndEventsAPI(CBRestConnection):
         status, content, _ = self.request(api)
         return status, content
 
+    def get_terse_cluster_info(self):
+        """
+        GET :: /pools/default/terseClusterInfo
+        docs.couchbase.com/server/current/rest-api/rest-cluster-get.html
+        """
+        api = self.base_url + "/pools/default/terseClusterInfo"
+        status, content, _ = self.request(api)
+        return status, content
+
     def cluster_details(self):
         """
         GET :: /pools/default
