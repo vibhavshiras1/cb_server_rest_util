@@ -22,6 +22,9 @@ class StatusAndEventsAPI(CBRestConnection):
         GET :: /logs/rebalanceReport?reportID=<report-id>
         docs.couchbase.com/server/current/rest-api/rest-get-cluster-tasks.html
         """
+        api = self.base_url + f"/logs/rebalanceReport?reportID={report_id}"
+        status, content, _ = self.request(api)
+        return status, content
 
     def cluster_info(self):
         """
