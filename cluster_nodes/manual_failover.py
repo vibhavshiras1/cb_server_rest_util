@@ -19,6 +19,7 @@ class ManualFailoverAPI(CBRestConnection):
             # Should be a string value true / false
             params["allowUnsafe"] = allow_unsafe
         status, content, _ = self.request(api, self.POST, params=params)
+        return status, content
 
     def perform_graceful_failover(self, otp_nodes):
         """
@@ -28,6 +29,7 @@ class ManualFailoverAPI(CBRestConnection):
         api = self.base_url + "/controller/startGracefulFailover"
         params = {"otpNode": otp_nodes}
         status, content, _ = self.request(api, self.POST, params=params)
+        return status, content
 
     def set_failover_recovery_type(self, otp_node, recovery_type):
         """
