@@ -42,3 +42,13 @@ class ManageServerGroups(CBRestConnection):
         api = self.base_url + f"/pools/default/serverGroups/{uuid}"
         status, content, _ = self.request(api, self.DELETE)
         return status, content
+
+    def update_group_membership(self, current_rev_num, groups_member_info):
+        """
+        PUT :: /pools/default/serverGroups?rev=<:number>
+        docs.couchbase.com/server/current/rest-api/rest-servergroup-put-membership.html
+        """
+        api = self.base_url + f"/pools/default/serverGroups?rev={current_rev_num}"
+        status, content, _ = self.request(api, self.PUT,
+                                          params=groups_member_info)
+        return status, content
