@@ -49,7 +49,9 @@ class RebalanceRestAPI(CBRestConnection):
         GET :: /pools/default/rebalanceProgress
         docs.couchbase.com/server/current/rest-api/rest-get-rebalance-progress.html
         """
-        raise NotImplementedError()
+        api = f'{self.base_url}/pools/default/rebalanceProgress'
+        status, content, _ = self.request(api, self.GET)
+        return status, content
 
     def retry_rebalance(self, enabled=None, after_time_period=None,
                         max_attempts=None):
@@ -57,29 +59,35 @@ class RebalanceRestAPI(CBRestConnection):
         GET / POST :: /pools/default/retryRebalance
         docs.couchbase.com/server/current/rest-api/rest-configure-rebalance-retry.html
         """
-        method = self.GET
-        if enabled is not None \
-                or after_time_period is not None \
-                or max_attempts is not None:
-            method = self.POST
-            params = {"enabled": enabled,
-                      "afterTimePeriod": after_time_period,
-                      "maxAttempts": max_attempts}
-        raise NotImplementedError()
+        api = self.base_url + '/settings/retryRebalance'
+        if enabled:
+            params = {"enabled": enabled}
+            if after_time_period:
+                params["afterTimePeriod"] = after_time_period
+            if max_attempts:
+                params["maxAttempts"] = max_attempts
+            status, content, _ = self.request(api, self.POST, params=params)
+        else:
+            status, content, _ = self.request(api, self.GET)
+        return status, content
 
     def pending_retry_rebalance(self):
         """
         GET :: /pools/default/pendingRetryRebalance
         docs.couchbase.com/server/current/rest-api/rest-get-rebalance-retry.html
         """
-        raise NotImplementedError()
+        api = f'{self.base_url}/pools/default/pendingRetryRebalance'
+        status, content, _ = self.request(api, self.GET)
+        return status, content
 
     def cancel_retry_rebalance(self, rebalance_id):
         """
         POST :: /controller/cancelRebalanceRetry/<rebalance-id>
         docs.couchbase.com/server/current/rest-api/rest-cancel-rebalance-retry.html
         """
-        raise NotImplementedError()
+        api = f'{self.base_url}/controller/cancelRebalanceRetry/{rebalance_id}'
+        status, content, _ = self.request(api, self.POST)
+        return status, content
 
     def rebalance_settings(self, rebalance_moves_per_node=None):
         """
@@ -100,5 +108,7 @@ class RebalanceRestAPI(CBRestConnection):
         POST :: /internalSettings
         docs.couchbase.com/server/current/rest-api/rest-cluster-disable-query.html
         """
+        api = self.base_url + '/internalSettings'
         params = {"indexAwareRebalanceDisabled": index_aware_rebalace_disabled}
-        raise NotImplementedError()
+        status, content, _ = self.request(api, self.POST, params=params)
+        return status, content
