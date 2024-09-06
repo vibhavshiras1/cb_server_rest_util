@@ -33,22 +33,28 @@ class CBRestConnection(object):
             result = '{'
             for key, val in value.items():
                 if isinstance(val, dict) or isinstance(val, list):
-                    result += CBRestConnection.flatten_param_to_str(val)
+                    result += '\"%s\":%s,' % (key, CBRestConnection.flatten_param_to_str(val))
                 else:
                     try:
                         val = int(val)
                     except ValueError:
                         val = '\"%s\"' % val
                     result += '\"%s\":%s,' % (key, val)
-            result = result[:-1] + '}'
+            if value:
+                result = result[:-1] + '}'
+            else:
+                result += '}'
         elif isinstance(value, list):
             result = '['
             for val in value:
                 if isinstance(val, dict) or isinstance(val, list):
-                    result += CBRestConnection.flatten_param_to_str(val)
+                    result += CBRestConnection.flatten_param_to_str(val) + ","
                 else:
                     result += '"%s",' % val
-            result = result[:-1] + ']'
+            if value:
+                result = result[:-1] + ']'
+            else:
+                result += ']'
         return result
 
     def set_server_values(self, server):

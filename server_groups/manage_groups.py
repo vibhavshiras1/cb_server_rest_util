@@ -48,7 +48,9 @@ class ManageServerGroups(CBRestConnection):
         PUT :: /pools/default/serverGroups?rev=<:number>
         docs.couchbase.com/server/current/rest-api/rest-servergroup-put-membership.html
         """
-        api = self.base_url + f"/pools/default/serverGroups?rev={current_rev_num}"
+        api = (self.base_url
+               + f"/pools/default/serverGroups?rev={current_rev_num}")
+        groups_member_info = self.flatten_param_to_str(groups_member_info)
         status, content, _ = self.request(api, self.PUT,
                                           params=groups_member_info)
         return status, content
