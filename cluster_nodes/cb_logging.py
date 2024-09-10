@@ -44,11 +44,11 @@ class Logging(CBRestConnection):
         status, content, _ = self.request(api, self.POST)
         return status, content
 
-    def log_client_error(self):
+    def log_client_error(self, message):
         """
         POST :: /logClientError
         docs.couchbase.com/server/current/rest-api/rest-client-logs.html
         """
         api = self.base_url + "/logClientError"
-        status, content, _ = self.request(api, self.POST)
+        status, content, _ = self.request(api, self.POST, params=message)
         return status, content
