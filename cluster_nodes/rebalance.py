@@ -9,7 +9,7 @@ class RebalanceRestAPI(CBRestConnection):
         super(RebalanceRestAPI, self).__init__()
 
     def rebalance(self, known_nodes, eject_nodes=None, topology=None,
-                  defrag_options=None):
+                  defrag_options=None, delta_recovery_buckets=None):
         """
         POST :: /controller/rebalance
         docs.couchbase.com/server/current/rest-api/rest-cluster-rebalance.html
@@ -20,6 +20,9 @@ class RebalanceRestAPI(CBRestConnection):
         if eject_nodes:
             eject_nodes = ','.join(eject_nodes)
             params["ejectedNodes"] = eject_nodes
+
+        if delta_recovery_buckets:
+            params['deltaRecoveryBuckets'] = ",".join(delta_recovery_buckets)
 
         if topology:
             # Valid from Morpheus release to update services dynamically
