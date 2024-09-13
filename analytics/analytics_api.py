@@ -1,7 +1,7 @@
-from cb_server_rest_util.connection import CBRestConnection
+from cb_server_rest_util.analytics.analytics_settings import AnalyticsSettingsAPI
 
 
-class AnalyticsRestAPI(CBRestConnection):
+class AnalyticsRestAPI(AnalyticsSettingsAPI):
     def __init__(self, server):
         super(AnalyticsRestAPI).__init__()
 
