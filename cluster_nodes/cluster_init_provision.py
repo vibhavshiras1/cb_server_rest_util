@@ -53,10 +53,8 @@ class ClusterInitializationProvision(CBRestConnection):
             params["allowedHosts"] = allowed_hosts
 
         api = self.base_url + "/clusterInit"
-        status, response = self.request(api, CBRestConnection.POST,
-                                        self.urlencode(params))
-        content = response.json if status else response.text
-        return status, content
+        status, response, _ = self.request(api, CBRestConnection.POST, params)
+        return status, response
 
     def initialize_node(self, username, password,
                         data_path=None, index_path=None,
