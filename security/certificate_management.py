@@ -3,7 +3,7 @@ from cb_server_rest_util.connection import CBRestConnection
 
 class CertificateMangementAPI(CBRestConnection):
     def __init__(self):
-        super(Certicates, self).__init__()
+        super(CertificateMangementAPI, self).__init__()
 
     def get_trusted_root_certificates(self):
         """
