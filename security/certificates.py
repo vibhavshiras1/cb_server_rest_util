@@ -8,7 +8,7 @@ class Certicates(CBRestConnection):
     def get_trusted_root_certificates(self):
         """
         GET:: /pools/default/trustedCAs
-        docs.couchbase.com/server/current/rest-api/rbac.html
+        docs.couchbase.com/server/current/manage/manage-xdcr/secure-xdcr-replication.html#capella-trusted-cas
         """
         url = "/pools/default/trustedCAs"
         api = self.base_url + url
