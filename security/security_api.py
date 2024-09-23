@@ -1,10 +1,12 @@
 from cb_server_rest_util.security.auditing import Auditing
+from cb_server_rest_util.security.certificates import Certicates
 from cb_server_rest_util.security.rbac_authorization import RbacAuthorization
 from cb_server_rest_util.security.restrict_node_addition import \
     NodeInitAddition
 
 
-class SecurityRestAPI(Auditing, NodeInitAddition, RbacAuthorization):
+class SecurityRestAPI(Auditing, Certicates, NodeInitAddition,
+                      RbacAuthorization):
     def __init__(self, server):
         super(SecurityRestAPI, self).__init__()
 
