@@ -34,3 +34,9 @@ class StatisticsAPI(CBRestConnection):
         status, content, _ = self.request(api, CBRestConnection.POST,
                                           params=data)
         return status, content
+
+    def query_prometheus(self, query):
+
+        api = self.base_url +  f"/_prometheus/api/v1/query?query={query}"
+        status, content, _ = self.request(api, CBRestConnection.GET)
+        return status, content
