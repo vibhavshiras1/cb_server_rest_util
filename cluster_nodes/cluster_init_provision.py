@@ -59,6 +59,8 @@ class ClusterInitializationProvision(CBRestConnection):
             params["nodeEncryption"] = node_encryption
         if allowed_hosts:
             params["allowedHosts"] = allowed_hosts
+        if indexer_storage_mode:
+            params["indexerStorageMode"] = indexer_storage_mode
 
         api = self.base_url + "/clusterInit"
         status, response, _ = self.request(api, CBRestConnection.POST, params)
