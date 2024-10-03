@@ -43,6 +43,14 @@ class ClusterInitializationProvision(CBRestConnection):
             params["services"] = services
         if memory_quota:
             params["memoryQuota"] = memory_quota
+        if index_memory_quota:
+            params["indexMemoryQuota"] = index_memory_quota
+        if eventing_memory_quota:
+            params["eventingMemoryQuota"] = eventing_memory_quota
+        if fts_memory_quota:
+            params["ftsMemoryQuota"] = fts_memory_quota
+        if cbas_memory_quota:
+            params["cbasMemoryQuota"] = cbas_memory_quota
         if afamily:
             params["afamily"] = afamily
         if afamily_only:
