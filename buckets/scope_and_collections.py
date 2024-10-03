@@ -65,7 +65,7 @@ class ScopeAndCollectionsAPI(CBRestConnection):
         scope_name = quote(scope_name)
         api = self.base_url + f"/pools/default/buckets/{bucket_name}" \
             + f"/scopes/{scope_name}/collections/{collection_name}"
-        status, content, _ = self.request(api, self.POST,
+        status, content, _ = self.request(api, self.PATCH,
                                           params=collection_spec)
         return status, content
 

@@ -12,6 +12,7 @@ class CBRestConnection(object):
     GET = "GET"
     POST = "POST"
     PUT = "PUT"
+    PATCH = "PATCH"
 
     @staticmethod
     def get_auth(headers):
