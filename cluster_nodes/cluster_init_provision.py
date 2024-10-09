@@ -76,7 +76,7 @@ class ClusterInitializationProvision(CBRestConnection):
         api = self.base_url + "/nodes/self/controller/settings"
         params = dict()
         if data_path:
-            params["data_path"] = data_path
+            params["path"] = data_path
         if index_path:
             params["index_path"] = index_path
         if cbas_path:
