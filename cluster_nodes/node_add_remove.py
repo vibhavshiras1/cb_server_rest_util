@@ -53,3 +53,13 @@ class NodeAdditionRemoval(CBRestConnection):
         status, content, _ = self.request(api, self.POST,
                                           params={"otpNode": otp_node})
         return status, content
+
+    def re_add_node(self, otp_node):
+        """
+        POST :: /controller/reAddNode
+        No documentation present
+        """
+        api = self.base_url + "/controller/reAddNode"
+        status, content, _ = self.request(api, self.POST,
+                                          params={"otpNode": otp_node})
+        return status, content
