@@ -16,6 +16,26 @@ class BucketManageAPI(CBRestConnection):
         status, content, _ = self.request(api)
         return status, content
 
+    def enable_bucket_encryption(self, bucket, secret_id):
+        """
+        POST :: /pools/default/buckets/<bucket>
+        """
+        api = f"{self.base_url}/pools/default/buckets/{bucket}"
+        params = {'encryptionAtRestSecretId': secret_id}
+        status, json_parsed, _ = self.request(api, method='POST',
+                                              params=params)
+        return status, json_parsed
+
+    def disable_bucket_encryption(self, bucket):
+        """
+        POST :: /pools/default/buckets/<bucket>
+        """
+        api = f"{self.base_url}/pools/default/buckets/{bucket}"
+        params = {'encryptionAtRestSecretId': '-1'}
+        status, json_parsed, _ = self.request(api, method='POST',
+                                              params=params)
+        return status, json_parsed
+
     def load_sample_bucket(self, bucket_name_list):
         """
         docs.couchbase.com/server/current/rest-api/rest-sample-buckets.html
