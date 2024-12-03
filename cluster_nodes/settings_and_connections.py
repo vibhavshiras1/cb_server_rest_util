@@ -24,6 +24,28 @@ class SettingsAndConnectionsAPI(CBRestConnection):
                                               params=params)
         return status, content
 
+    def create_secret(self, params):
+        """
+        POST :: /settings/secrets
+        """
+        api = self.base_url + '/settings/secrets'
+        status, json_parsed, _ = self.request(api, method='POST',
+                                              params=params)
+        return status, json_parsed
+
+    def enable_config_encryption(self, secret_id):
+        """
+        POST :: /settings/security/encryptionAtRest
+        """
+        api = f"{self.base_url}/settings/security/encryptionAtRest"
+        params = {
+            'config.encryptionMethod': 'secret',
+            'config.encryptionSecretId': secret_id
+        }
+        status, json_parsed, _ = self.request(api, method='POST',
+                                              params=params)
+        return status, json_parsed
+
     def set_auto_compaction_settings(self, parallel_db_and_vc="false",
                                      db_fragment_threshold=None,
                                      view_fragment_threshold=None,
