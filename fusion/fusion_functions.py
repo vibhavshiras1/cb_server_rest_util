@@ -11,7 +11,7 @@ class FusionFunctions(CBRestConnection):
         api = self.base_url + "/fusion/activeGuestVolumes"
         status, content, _ = self.request(api)
         return status, content
-    
+
     def manage_fusion_settings(self, log_store_uri=None, enable_sync_threshold=None):
         """
         POST / GET :: /settings/fusion
@@ -68,4 +68,15 @@ class FusionFunctions(CBRestConnection):
         """
         api = self.base_url + "/fusion/stop"
         status, content, _ = self.request(api, CBRestConnection.POST)
+        return status, content
+
+    def prepare_rebalance(self, keep_nodes):
+        """
+        POST :: /controller/fusion/prepareRebalance
+        """
+        keepNodes = ','.join(keep_nodes)
+        params = {'keepNodes': keepNodes}
+
+        api = self.base_url + "/controller/fusion/prepareRebalance"
+        status, content, _ = self.request(api, CBRestConnection.POST, params=params)
         return status, content
